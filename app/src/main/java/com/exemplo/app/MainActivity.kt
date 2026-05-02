@@ -17,6 +17,8 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import java.io.File
 import java.util.zip.ZipFile
 
@@ -29,6 +31,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
@@ -120,7 +128,7 @@ class MainActivity : AppCompatActivity() {
 
         listView.setOnItemClickListener { _, _, position, _ ->
             val arquivo = arquivosCompativeis[position]
-            abrirNoMinecraft(arquivo)
+            abrirArquivo(arquivo)
         }
     }
 
@@ -165,17 +173,25 @@ class MainActivity : AppCompatActivity() {
         return arquivos
     }
 
-    private fun abrirNoMinecraft(arquivo: File) {
+    private fun abrirArquivo(arquivo: File) {
         try {
             val uri = Uri.fromFile(arquivo)
+            val mimeType = when {
+                arquivo.name.lowercase().endsWith(".mcpack") -> "application/x-mcpack"
+                arquivo.name.lowercase().endsWith(".mcworld") -> "application/x-mcworld"
+                arquivo.name.lowercase().endsWith(".mcaddon") -> "application/x-mcaddon"
+                arquivo.name.lowercase().endsWith(".mctemplate") -> "application/x-mctemplate"
+                arquivo.name.lowercase().endsWith(".mcstructure") -> "application/x-mcstructure"
+                else -> "application/octet-stream"
+            }
+            
             val intent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(uri, "application/octet-stream")
-                setPackage("com.mojang.minecraftpe")
+                setDataAndType(uri, mimeType)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
             startActivity(intent)
         } catch (e: Exception) {
-            Toast.makeText(this, "Minecraft não está instalado ou não foi possível abrir o arquivo", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Erro ao abrir arquivo", Toast.LENGTH_LONG).show()
         }
     }
 }
