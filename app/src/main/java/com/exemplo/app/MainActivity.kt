@@ -1,7 +1,6 @@
 package com.exemplo.app
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
@@ -12,9 +11,11 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
+import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -38,6 +39,29 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        val btnMenu = findViewById<Button>(R.id.btnMenu)
+        btnMenu.setOnClickListener { view ->
+            val popup = PopupMenu(this, view)
+            popup.menu.add("CurseForge")
+            popup.menu.add("MCPEDL")
+            popup.setOnMenuItemClickListener { item ->
+                when (item.title) {
+                    "CurseForge" -> {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.curseforge.com/minecraft/search?class=mc-addons"))
+                        startActivity(intent)
+                        true
+                    }
+                    "MCPEDL" -> {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://mcpedl.com"))
+                        startActivity(intent)
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popup.show()
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
