@@ -10,6 +10,7 @@ class MainActivity : Activity() {
         val textView = TextView(this)
         textView.text = "Template 🐴 Kotlin 2.0 + Gradle 8.12"
         textView.textSize = 18f
+        textView.setTextColor(Color.BLACK)
         setContentView(textView)
     }
 }
