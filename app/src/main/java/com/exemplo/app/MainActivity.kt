@@ -1,6 +1,7 @@
 package com.exemplo.app
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
@@ -181,10 +182,21 @@ class MainActivity : AppCompatActivity() {
                 setDataAndType(uri, "application/octet-stream")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                setPackage("com.mojang.minecraftpe")
             }
             startActivity(intent)
         } catch (e: Exception) {
-            Toast.makeText(this, "Erro ao abrir arquivo: ${e.message}", Toast.LENGTH_LONG).show()
+            try {
+                val uri = FileProvider.getUriForFile(this, "${packageName}.provider", arquivo)
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(uri, "application/octet-stream")
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                startActivity(intent)
+            } catch (e2: Exception) {
+                Toast.makeText(this, "Minecraft não está instalado", Toast.LENGTH_LONG).show()
+            }
         }
     }
 }
