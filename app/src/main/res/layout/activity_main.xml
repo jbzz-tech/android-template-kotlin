@@ -3,19 +3,52 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:background="#1a1a2e">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:background="#16213e">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Minecraft Importer"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#e94560" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Texturas • Addons • Skins • Mapas"
+            android:textSize="14sp"
+            android:textColor="#a0a0b0"
+            android:layout_marginTop="4dp" />
+
+    </LinearLayout>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Arquivos compatíveis com Minecraft"
-        android:textSize="18sp"
+        android:text="Arquivos compatíveis"
+        android:textSize="16sp"
         android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
+        android:textColor="#ffffff"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="8dp" />
 
     <ListView
         android:id="@+id/listViewArquivos"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:divider="#2a2a4a"
+        android:dividerHeight="1dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp" />
 
 </LinearLayout>

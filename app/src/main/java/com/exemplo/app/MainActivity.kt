@@ -90,13 +90,17 @@ class MainActivity : AppCompatActivity() {
             val extensao = arquivo.name.lowercase()
             if (extensao.endsWith(".mcpack") || extensao.endsWith(".mcaddon") || extensao.endsWith(".mctemplate")) {
                 val zipFile = ZipFile(arquivo)
-                val entry = zipFile.getEntry("pack_icon.png")
-                if (entry != null) {
-                    val inputStream = zipFile.getInputStream(entry)
-                    val bitmap = BitmapFactory.decodeStream(inputStream)
-                    inputStream.close()
-                    zipFile.close()
-                    return bitmap
+                val entries = zipFile.entries()
+                
+                while (entries.hasMoreElements()) {
+                    val entry = entries.nextElement()
+                    if (!entry.isDirectory && entry.name.endsWith("/pack_icon.png")) {
+                        val inputStream = zipFile.getInputStream(entry)
+                        val bitmap = BitmapFactory.decodeStream(inputStream)
+                        inputStream.close()
+                        zipFile.close()
+                        return bitmap
+                    }
                 }
                 zipFile.close()
             }
