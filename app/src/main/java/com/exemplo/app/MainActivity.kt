@@ -1,7 +1,10 @@
 package com.exemplo.app
 
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -10,12 +13,12 @@ import android.provider.Settings
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
-import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -41,27 +44,9 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        val btnMenu = findViewById<Button>(R.id.btnMenu)
-        btnMenu.setOnClickListener { view ->
-            val popup = PopupMenu(this, view)
-            popup.menu.add("CurseForge")
-            popup.menu.add("MCPEDL")
-            popup.setOnMenuItemClickListener { item ->
-                when (item.title) {
-                    "CurseForge" -> {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.curseforge.com/minecraft/search?class=mc-addons"))
-                        startActivity(intent)
-                        true
-                    }
-                    "MCPEDL" -> {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://mcpedl.com"))
-                        startActivity(intent)
-                        true
-                    }
-                    else -> false
-                }
-            }
-            popup.show()
+        val btnDownload = findViewById<Button>(R.id.btnDownload)
+        btnDownload.setOnClickListener {
+            mostrarDialogDownload()
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -86,6 +71,41 @@ class MainActivity : AppCompatActivity() {
                 carregarArquivos()
             }
         }
+    }
+
+    private fun mostrarDialogDownload() {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_download)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setLayout(
+            (resources.displayMetrics.widthPixels * 0.9).toInt(),
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        val btnCurseForge = dialog.findViewById<Button>(R.id.btnCurseForge)
+        val btnMcpedl = dialog.findViewById<Button>(R.id.btnMcpedl)
+        val btnMinecraftDownload = dialog.findViewById<Button>(R.id.btnMinecraftDownload)
+
+        btnCurseForge.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.curseforge.com/minecraft/search?class=mc-addons"))
+            startActivity(intent)
+            dialog.dismiss()
+        }
+
+        btnMcpedl.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://mcpedl.com"))
+            startActivity(intent)
+            dialog.dismiss()
+        }
+
+        btnMinecraftDownload.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://mcpedl.org/download-minecraft"))
+            startActivity(intent)
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun carregarArquivos() {
