@@ -1,6 +1,11 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
+repositories {
+    google()
+    mavenCentral()
+}
+
 android {
     namespace 'com.exemplo.app'
     compileSdk 36
@@ -37,5 +42,6 @@ android {
 }
 
 dependencies {
-    // kotlin-stdlib já incluso pelo plugin; sem dependências extras = APK mínimo
+    // Kotlin stdlib já incluso pelo plugin, mas se quiser explicitamente:
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:2.0.21'
 }
