@@ -1,14 +1,22 @@
 package com.exemplo.app
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import java.io.File
+import java.io.FileInputStream
+import java.util.zip.ZipFile
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,13 +36,69 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, arquivosCompativeis.map { it.name })
+        val adapter = object : ArrayAdapter<File>(this, 0, arquivosCompativeis) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = convertView ?: LinearLayout(context).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    setPadding(16, 16, 16, 16)
+                    
+                    val imageView = ImageView(context).apply {
+                        id = View.generateViewId()
+                        layoutParams = LinearLayout.LayoutParams(96, 96)
+                    }
+                    addView(imageView)
+                    
+                    val textView = TextView(context).apply {
+                        id = View.generateViewId()
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            setMargins(16, 0, 0, 0)
+                        }
+                        textSize = 16f
+                    }
+                    addView(textView)
+                }
+
+                val arquivo = getItem(position)!!
+                val imageView = view.findViewById<ImageView>(view.getChildAt(0).id)
+                val textView = view.findViewById<TextView>(view.getChildAt(1).id)
+                
+                textView.text = arquivo.name
+                imageView.setImageBitmap(buscarPackIcon(arquivo))
+                
+                return view
+            }
+        }
+        
         listView.adapter = adapter
 
         listView.setOnItemClickListener { _, _, position, _ ->
             val arquivo = arquivosCompativeis[position]
             abrirNoMinecraft(arquivo)
         }
+    }
+
+    private fun buscarPackIcon(arquivo: File): android.graphics.Bitmap? {
+        try {
+            val extensao = arquivo.name.lowercase()
+            if (extensao.endsWith(".mcpack") || extensao.endsWith(".mcaddon") || extensao.endsWith(".mctemplate")) {
+                val zipFile = ZipFile(arquivo)
+                val entry = zipFile.getEntry("pack_icon.png")
+                if (entry != null) {
+                    val inputStream = zipFile.getInputStream(entry)
+                    val bitmap = BitmapFactory.decodeStream(inputStream)
+                    inputStream.close()
+                    zipFile.close()
+                    return bitmap
+                }
+                zipFile.close()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
     }
 
     private fun buscarArquivosCompativeis(): List<File> {
