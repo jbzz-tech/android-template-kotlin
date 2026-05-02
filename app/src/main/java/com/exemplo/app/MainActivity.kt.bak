@@ -15,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import java.io.File
+import java.io.FileInputStream
 import java.util.zip.ZipFile
 
 class MainActivity : AppCompatActivity() {
@@ -37,38 +38,32 @@ class MainActivity : AppCompatActivity() {
 
         val adapter = object : ArrayAdapter<File>(this, 0, arquivosCompativeis) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val view: LinearLayout
-                
-                if (convertView != null) {
-                    view = convertView as LinearLayout
-                } else {
-                    view = LinearLayout(context).apply {
-                        orientation = LinearLayout.HORIZONTAL
-                        setPadding(16, 16, 16, 16)
-                        
-                        val imageView = ImageView(context).apply {
-                            id = View.generateViewId()
-                            layoutParams = LinearLayout.LayoutParams(96, 96)
-                        }
-                        addView(imageView)
-                        
-                        val textView = TextView(context).apply {
-                            id = View.generateViewId()
-                            layoutParams = LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
-                            ).apply {
-                                setMargins(16, 0, 0, 0)
-                            }
-                            textSize = 16f
-                        }
-                        addView(textView)
+                val view = convertView ?: LinearLayout(context).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    setPadding(16, 16, 16, 16)
+                    
+                    val imageView = ImageView(context).apply {
+                        id = View.generateViewId()
+                        layoutParams = LinearLayout.LayoutParams(96, 96)
                     }
+                    addView(imageView)
+                    
+                    val textView = TextView(context).apply {
+                        id = View.generateViewId()
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            setMargins(16, 0, 0, 0)
+                        }
+                        textSize = 16f
+                    }
+                    addView(textView)
                 }
 
                 val arquivo = getItem(position)!!
-                val imageView = view.getChildAt(0) as ImageView
-                val textView = view.getChildAt(1) as TextView
+                val imageView = view.findViewById<ImageView>(view.getChildAt(0).id)
+                val textView = view.findViewById<TextView>(view.getChildAt(1).id)
                 
                 textView.text = arquivo.name
                 imageView.setImageBitmap(buscarPackIcon(arquivo))
