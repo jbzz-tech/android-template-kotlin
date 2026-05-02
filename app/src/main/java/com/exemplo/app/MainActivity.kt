@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
                                 setMargins(16, 0, 0, 0)
                             }
                             textSize = 16f
+                            setTextColor(0xFFFFFFFF.toInt())
                         }
                         addView(textView)
                     }
@@ -94,7 +95,8 @@ class MainActivity : AppCompatActivity() {
                 
                 while (entries.hasMoreElements()) {
                     val entry = entries.nextElement()
-                    if (!entry.isDirectory && entry.name.endsWith("/pack_icon.png")) {
+                    val entryName = entry.name
+                    if (!entry.isDirectory && (entryName == "pack_icon.png" || entryName.endsWith("/pack_icon.png"))) {
                         val inputStream = zipFile.getInputStream(entry)
                         val bitmap = BitmapFactory.decodeStream(inputStream)
                         inputStream.close()
