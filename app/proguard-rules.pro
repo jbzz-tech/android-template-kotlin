@@ -1,4 +1,0 @@
--keep class com.exemplo.app.** { *; }
--dontwarn
--allowaccessmodification
--repackageclasses
