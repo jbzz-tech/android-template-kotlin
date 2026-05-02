@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#3b1b0d">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BAIXE SEUS ADDONS,"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#4cff00"
+        android:fontFamily="monospace" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TEXTURAS, MAPAS AQUI:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#4cff00"
+        android:fontFamily="monospace"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/btnCurseForge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CURSEFORGE"
+        android:textColor="#ffffff"
+        android:textStyle="bold"
+        android:fontFamily="monospace"
+        android:background="#5a3a1a"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btnMcpedl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="MCPEDL"
+        android:textColor="#ffffff"
+        android:textStyle="bold"
+        android:fontFamily="monospace"
+        android:background="#5a3a1a"
+        android:layout_marginBottom="32dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#5a3a1a"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BAIXE O MINECRAFT"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#f0e6c5"
+        android:fontFamily="monospace" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BEDROCK:"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#f0e6c5"
+        android:fontFamily="monospace"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/btnMinecraftDownload"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="MCPEDL.ORG"
+        android:textColor="#ffffff"
+        android:textStyle="bold"
+        android:fontFamily="monospace"
+        android:background="#4cff00"
+        android:textColor="#1a1a2e" />
+
+</LinearLayout>
