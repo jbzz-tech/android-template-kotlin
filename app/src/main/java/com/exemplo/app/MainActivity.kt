@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -98,10 +99,13 @@ class MainActivity : AppCompatActivity() {
                     view = LinearLayout(context).apply {
                         orientation = LinearLayout.HORIZONTAL
                         setPadding(16, 16, 16, 16)
+                        gravity = Gravity.CENTER_VERTICAL
                         
                         val imageView = ImageView(context).apply {
                             id = View.generateViewId()
                             layoutParams = LinearLayout.LayoutParams(96, 96)
+                            scaleType = ImageView.ScaleType.CENTER_CROP
+                            setBackgroundColor(0xFF2b1709.toInt())
                         }
                         addView(imageView)
                         
@@ -114,7 +118,9 @@ class MainActivity : AppCompatActivity() {
                                 setMargins(16, 0, 0, 0)
                             }
                             textSize = 16f
-                            setTextColor(0xFFFFFFFF.toInt())
+                            setTextColor(0xFFf0e6c5.toInt())
+                            typeface = android.graphics.Typeface.MONOSPACE
+                            gravity = Gravity.CENTER_VERTICAL
                         }
                         addView(textView)
                     }
@@ -125,7 +131,12 @@ class MainActivity : AppCompatActivity() {
                 val textView = view.getChildAt(1) as TextView
                 
                 textView.text = arquivo.name
-                imageView.setImageBitmap(buscarPackIcon(arquivo))
+                val icon = buscarPackIcon(arquivo)
+                if (icon != null) {
+                    imageView.setImageBitmap(icon)
+                } else {
+                    imageView.setBackgroundColor(0xFF5a3a1a.toInt())
+                }
                 
                 return view
             }
