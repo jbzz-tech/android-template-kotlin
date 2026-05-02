@@ -17,6 +17,7 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import java.io.File
@@ -175,23 +176,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun abrirArquivo(arquivo: File) {
         try {
-            val uri = Uri.fromFile(arquivo)
-            val mimeType = when {
-                arquivo.name.lowercase().endsWith(".mcpack") -> "application/x-mcpack"
-                arquivo.name.lowercase().endsWith(".mcworld") -> "application/x-mcworld"
-                arquivo.name.lowercase().endsWith(".mcaddon") -> "application/x-mcaddon"
-                arquivo.name.lowercase().endsWith(".mctemplate") -> "application/x-mctemplate"
-                arquivo.name.lowercase().endsWith(".mcstructure") -> "application/x-mcstructure"
-                else -> "application/octet-stream"
-            }
-            
+            val uri = FileProvider.getUriForFile(this, "${packageName}.provider", arquivo)
             val intent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(uri, mimeType)
+                setDataAndType(uri, "application/octet-stream")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             startActivity(intent)
         } catch (e: Exception) {
-            Toast.makeText(this, "Erro ao abrir arquivo", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Erro ao abrir arquivo: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 }
