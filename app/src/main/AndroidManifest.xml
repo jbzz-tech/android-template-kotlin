@@ -3,7 +3,7 @@
     <application
         android:allowBackup="true"
         android:label="Template Jegue"
-        android:theme="@android:style/Theme.Material.Light.DarkActionBar">
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         <activity
             android:name=".MainActivity"
             android:exported="true">
