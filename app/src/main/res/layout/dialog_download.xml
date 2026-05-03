@@ -77,7 +77,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="MCPEDL.ORG"
-        android:textColor="#ffffff"
         android:textStyle="bold"
         android:fontFamily="monospace"
         android:background="#4cff00"
