@@ -1,7 +1,9 @@
 package com.exemplo.app
 
+import android.Manifest
 import android.app.Dialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -22,8 +24,13 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import kotlinx.coroutines.*
+import org.json.JSONObject
 import java.io.File
+import java.net.URL
 import java.util.zip.ZipFile
 
 class MainActivity : AppCompatActivity() {
@@ -31,6 +38,10 @@ class MainActivity : AppCompatActivity() {
     private val extensoesCompativeis = listOf(
         ".mcpack", ".mcworld", ".mcaddon", ".mctemplate", ".mcstructure"
     )
+
+    private val PERMISSAO_STORAGE = 1001
+    private val VERSAO_APP = "1.0"
+    private val URL_VERSAO = "https://raw.githubusercontent.com/kry-tech/android-template-kotlin/main/versao.json"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +52,66 @@ class MainActivity : AppCompatActivity() {
             mostrarDialogDownload()
         }
 
+        verificarPermissao()
+        verificarAtualizacao()
+    }
+
+    private fun verificarAtualizacao() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val json = URL(URL_VERSAO).readText()
+                val jsonObject = JSONObject(json)
+                val versaoNova = jsonObject.getString("versao")
+                val linkDownload = jsonObject.getString("link")
+                val changelog = jsonObject.optString("changelog", "")
+
+                if (versaoNova != VERSAO_APP) {
+                    withContext(Dispatchers.Main) {
+                        mostrarDialogAtualizacao(versaoNova, linkDownload, changelog)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun mostrarDialogAtualizacao(versaoNova: String, link: String, changelog: String) {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_atualizacao)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setLayout(
+            (resources.displayMetrics.widthPixels * 0.9).toInt(),
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        val txtVersao = dialog.findViewById<TextView>(R.id.txtVersaoNova)
+        val txtChangelog = dialog.findViewById<TextView>(R.id.txtChangelog)
+        val btnAtualizar = dialog.findViewById<Button>(R.id.btnAtualizar)
+        val btnDepois = dialog.findViewById<Button>(R.id.btnDepois)
+
+        txtVersao.text = "Versão $versaoNova disponível!"
+        if (changelog.isNotEmpty()) {
+            txtChangelog.text = changelog
+        } else {
+            txtChangelog.visibility = View.GONE
+        }
+
+        btnAtualizar.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+            startActivity(intent)
+            dialog.dismiss()
+        }
+
+        btnDepois.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun verificarPermissao() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
                 Toast.makeText(this, "Permita acesso a todos os arquivos nas configurações", Toast.LENGTH_LONG).show()
@@ -52,7 +123,27 @@ class MainActivity : AppCompatActivity() {
                 carregarArquivos()
             }
         } else {
-            carregarArquivos()
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    PERMISSAO_STORAGE
+                )
+            } else {
+                carregarArquivos()
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSAO_STORAGE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                carregarArquivos()
+            } else {
+                Toast.makeText(this, "Permissão negada. O app não pode acessar os arquivos.", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
