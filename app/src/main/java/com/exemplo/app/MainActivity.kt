@@ -1,12 +1,10 @@
 package com.exemplo.app
 
 import android.Manifest
-import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -15,7 +13,6 @@ import android.provider.Settings
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageView
@@ -27,10 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import kotlinx.coroutines.*
-import org.json.JSONObject
 import java.io.File
-import java.net.URL
 import java.util.zip.ZipFile
 
 class MainActivity : AppCompatActivity() {
@@ -40,8 +34,7 @@ class MainActivity : AppCompatActivity() {
     )
 
     private val PERMISSAO_STORAGE = 1001
-    private val VERSAO_APP = "1.0"
-    private val URL_VERSAO = "https://raw.githubusercontent.com/kry-tech/android-template-kotlin/main/versao.json"
+    private val cacheIcons = mutableMapOf<String, android.graphics.Bitmap?>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,66 +42,17 @@ class MainActivity : AppCompatActivity() {
 
         val btnDownload = findViewById<Button>(R.id.btnDownload)
         btnDownload.setOnClickListener {
-            mostrarDialogDownload()
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.curseforge.com/minecraft/search?class=mc-addons"))
+            startActivity(intent)
+        }
+
+        val btnMenu = findViewById<Button>(R.id.btnMenu)
+        btnMenu.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://chat.whatsapp.com/SEU_LINK_DE_CONVITE_AQUI"))
+            startActivity(intent)
         }
 
         verificarPermissao()
-        verificarAtualizacao()
-    }
-
-    private fun verificarAtualizacao() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val json = URL(URL_VERSAO).readText()
-                val jsonObject = JSONObject(json)
-                val versaoNova = jsonObject.getString("versao")
-                val linkDownload = jsonObject.getString("link")
-                val changelog = jsonObject.optString("changelog", "")
-
-                if (versaoNova != VERSAO_APP) {
-                    withContext(Dispatchers.Main) {
-                        mostrarDialogAtualizacao(versaoNova, linkDownload, changelog)
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    private fun mostrarDialogAtualizacao(versaoNova: String, link: String, changelog: String) {
-        val dialog = Dialog(this)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.dialog_atualizacao)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.window?.setLayout(
-            (resources.displayMetrics.widthPixels * 0.9).toInt(),
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-
-        val txtVersao = dialog.findViewById<TextView>(R.id.txtVersaoNova)
-        val txtChangelog = dialog.findViewById<TextView>(R.id.txtChangelog)
-        val btnAtualizar = dialog.findViewById<Button>(R.id.btnAtualizar)
-        val btnDepois = dialog.findViewById<Button>(R.id.btnDepois)
-
-        txtVersao.text = "Versão $versaoNova disponível!"
-        if (changelog.isNotEmpty()) {
-            txtChangelog.text = changelog
-        } else {
-            txtChangelog.visibility = View.GONE
-        }
-
-        btnAtualizar.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
-            startActivity(intent)
-            dialog.dismiss()
-        }
-
-        btnDepois.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialog.show()
     }
 
     private fun verificarPermissao() {
@@ -156,41 +100,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun mostrarDialogDownload() {
-        val dialog = Dialog(this)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.dialog_download)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.window?.setLayout(
-            (resources.displayMetrics.widthPixels * 0.9).toInt(),
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-
-        val btnCurseForge = dialog.findViewById<Button>(R.id.btnCurseForge)
-        val btnMcpedl = dialog.findViewById<Button>(R.id.btnMcpedl)
-        val btnMinecraftDownload = dialog.findViewById<Button>(R.id.btnMinecraftDownload)
-
-        btnCurseForge.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.curseforge.com/minecraft/search?class=mc-addons"))
-            startActivity(intent)
-            dialog.dismiss()
-        }
-
-        btnMcpedl.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://mcpedl.com"))
-            startActivity(intent)
-            dialog.dismiss()
-        }
-
-        btnMinecraftDownload.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://mcpedl.org/download-minecraft"))
-            startActivity(intent)
-            dialog.dismiss()
-        }
-
-        dialog.show()
-    }
-
     private fun carregarArquivos() {
         val listView = findViewById<ListView>(R.id.listViewArquivos)
         val arquivosCompativeis = buscarArquivosCompativeis()
@@ -198,6 +107,13 @@ class MainActivity : AppCompatActivity() {
         if (arquivosCompativeis.isEmpty()) {
             Toast.makeText(this, "Nenhum arquivo compatível encontrado", Toast.LENGTH_LONG).show()
             return
+        }
+
+        // Carrega todos os ícones uma vez e armazena no cache
+        for (arquivo in arquivosCompativeis) {
+            if (!cacheIcons.containsKey(arquivo.absolutePath)) {
+                cacheIcons[arquivo.absolutePath] = buscarPackIcon(arquivo)
+            }
         }
 
         val adapter = object : ArrayAdapter<File>(this, 0, arquivosCompativeis) {
@@ -242,7 +158,7 @@ class MainActivity : AppCompatActivity() {
                 val textView = view.getChildAt(1) as TextView
                 
                 textView.text = arquivo.name
-                val icon = buscarPackIcon(arquivo)
+                val icon = cacheIcons[arquivo.absolutePath]
                 if (icon != null) {
                     imageView.setImageBitmap(icon)
                 } else {
@@ -263,24 +179,71 @@ class MainActivity : AppCompatActivity() {
 
     private fun buscarPackIcon(arquivo: File): android.graphics.Bitmap? {
         try {
-            val extensao = arquivo.name.lowercase()
-            if (extensao.endsWith(".mcpack") || extensao.endsWith(".mcaddon") || extensao.endsWith(".mctemplate")) {
-                val zipFile = ZipFile(arquivo)
-                val entries = zipFile.entries()
-                
-                while (entries.hasMoreElements()) {
-                    val entry = entries.nextElement()
-                    val entryName = entry.name
-                    if (!entry.isDirectory && (entryName == "pack_icon.png" || entryName.endsWith("/pack_icon.png"))) {
-                        val inputStream = zipFile.getInputStream(entry)
-                        val bitmap = BitmapFactory.decodeStream(inputStream)
-                        inputStream.close()
-                        zipFile.close()
-                        return bitmap
+            val zipFile = ZipFile(arquivo)
+            val entries = zipFile.entries()
+            val extensoesImagem = listOf(".png", ".jpg", ".jpeg")
+            val subpastas = mutableListOf<String>()
+
+            // Primeiro: procurar na raiz
+            while (entries.hasMoreElements()) {
+                val entry = entries.nextElement()
+                val entryName = entry.name
+
+                if (!entry.isDirectory) {
+                    // Verifica se é uma imagem na raiz (sem barra no nome)
+                    if (!entryName.contains("/")) {
+                        if (extensoesImagem.any { entryName.lowercase().endsWith(it) }) {
+                            val inputStream = zipFile.getInputStream(entry)
+                            val bitmap = BitmapFactory.decodeStream(inputStream)
+                            inputStream.close()
+                            zipFile.close()
+                            return bitmap
+                        }
+                    } else {
+                        // Coleta nomes de subpastas (primeiro nível)
+                        val parts = entryName.split("/")
+                        if (parts.size >= 2) {
+                            val subpasta = parts[0]
+                            if (!subpastas.contains(subpasta)) {
+                                subpastas.add(subpasta)
+                            }
+                        }
+                    }
+                } else {
+                    // Coleta nomes de subpastas (diretórios)
+                    val entryName = entry.name.trimEnd('/')
+                    if (!entryName.contains("/")) {
+                        if (!subpastas.contains(entryName)) {
+                            subpastas.add(entryName)
+                        }
                     }
                 }
-                zipFile.close()
             }
+
+            // Segundo: procurar nas subpastas (apenas primeiro nível)
+            for (subpasta in subpastas) {
+                val entries2 = zipFile.entries()
+                while (entries2.hasMoreElements()) {
+                    val entry = entries2.nextElement()
+                    val entryName = entry.name
+
+                    if (!entry.isDirectory && entryName.startsWith("$subpasta/")) {
+                        // Verifica se está exatamente um nível abaixo da subpasta
+                        val nomeAposSubpasta = entryName.removePrefix("$subpasta/")
+                        if (!nomeAposSubpasta.contains("/")) {
+                            if (extensoesImagem.any { nomeAposSubpasta.lowercase().endsWith(it) }) {
+                                val inputStream = zipFile.getInputStream(entry)
+                                val bitmap = BitmapFactory.decodeStream(inputStream)
+                                inputStream.close()
+                                zipFile.close()
+                                return bitmap
+                            }
+                        }
+                    }
+                }
+            }
+
+            zipFile.close()
         } catch (e: Exception) {
             e.printStackTrace()
         }
