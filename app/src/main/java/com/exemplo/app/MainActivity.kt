@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
         val btnDownload = findViewById<ImageButton>(R.id.btnDownload)
         btnDownload.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.curseforge.com/minecraft/search?class=mc-addons"))
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.curseforge.com/minecraft-bedrock"))
             startActivity(intent)
         }
 
