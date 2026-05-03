@@ -52,4 +52,26 @@ dependencies {
     
     // ConstraintLayout (opcional, pra layouts modernos)
     implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
+    
+    // AdMob
+    implementation 'com.google.android.gms:play-services-ads:23.6.0'
+    
+    // Unity Ads
+    implementation files('libs/unity-ads.aar')
+    
+    // AppLovin
+    implementation 'com.applovin:applovin-sdk:13.1.0'
+    
+    // Facebook Audience Network
+    implementation 'com.facebook.android:audience-network-sdk:6.18.0'
+    
+    // AdColony
+    implementation 'com.adcolony:sdk:4.8.0'
+    
+    // JavaMail para envio de emails
+    implementation 'com.sun.mail:android-mail:1.6.7'
+    implementation 'com.sun.mail:android-activation:1.6.7'
+    
+    // Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
 }
