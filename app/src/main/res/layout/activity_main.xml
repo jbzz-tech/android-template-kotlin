@@ -54,25 +54,23 @@
                     android:layout_marginTop="2dp" />
             </LinearLayout>
 
-            <Button
+            <ImageButton
                 android:id="@+id/btnDownload"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:text="⬇"
-                android:textSize="24sp"
-                android:textColor="#ffffff"
+                android:src="@drawable/ic_download"
                 android:background="#5a3a1a"
-                android:padding="0dp" />
+                android:padding="8dp"
+                android:scaleType="fitCenter" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/btnMenu"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:text="☰"
-                android:textSize="24sp"
-                android:textColor="#ffffff"
+                android:src="@drawable/ic_whatsapp"
                 android:background="#5a3a1a"
-                android:padding="0dp"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
                 android:layout_marginStart="8dp" />
         </LinearLayout>
 
