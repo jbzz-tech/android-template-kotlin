@@ -56,17 +56,19 @@
 
             <ImageButton
                 android:id="@+id/btnDownload"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:src="@drawable/ic_download"
+                android:background="@android:color/transparent"
                 android:padding="8dp"
                 android:scaleType="fitCenter" />
 
             <ImageButton
                 android:id="@+id/btnMenu"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:src="@drawable/ic_whatsapp"
+                android:background="@android:color/transparent"
                 android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:layout_marginStart="8dp" />
