@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowFullscreen">false</item>
-        <item name="android:statusBarColor">#4cff00</item>
-        <item name="android:navigationBarColor">#2b1709</item>
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:windowTranslucentNavigation">false</item>
-        <item name="android:fitsSystemWindows">true</item>
+        <item name="colorPrimary">#4cff00</item>
+        <item name="colorPrimaryDark">#2b1709</item>
+        <item name="colorAccent">#4cff00</item>
     </style>
 </resources>
