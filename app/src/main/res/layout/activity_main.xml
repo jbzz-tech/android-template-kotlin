@@ -59,7 +59,6 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/ic_download"
-                android:background="#5a3a1a"
                 android:padding="8dp"
                 android:scaleType="fitCenter" />
 
@@ -68,7 +67,6 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/ic_whatsapp"
-                android:background="#5a3a1a"
                 android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:layout_marginStart="8dp" />
