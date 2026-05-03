@@ -37,6 +37,12 @@ android {
     kotlinOptions {
         jvmTarget = '17'
     }
+    
+    packaging {
+        resources {
+            excludes += ['META-INF/DEPENDENCIES', 'META-INF/LICENSE', 'META-INF/LICENSE.txt', 'META-INF/NOTICE', 'META-INF/NOTICE.txt']
+        }
+    }
 }
 
 dependencies {
@@ -53,19 +59,19 @@ dependencies {
     // ConstraintLayout (opcional, pra layouts modernos)
     implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
     
-    // AdMob
+    // AdMob (Google)
     implementation 'com.google.android.gms:play-services-ads:23.6.0'
     
-    // Unity Ads
-    implementation files('libs/unity-ads.aar')
+    // Unity Ads (via Maven)
+    implementation 'com.unity3d.ads:unity-ads:4.12.5'
     
-    // AppLovin
+    // AppLovin (via Maven)
     implementation 'com.applovin:applovin-sdk:13.1.0'
     
-    // Facebook Audience Network
+    // Facebook Audience Network (via Maven)
     implementation 'com.facebook.android:audience-network-sdk:6.18.0'
     
-    // AdColony
+    // AdColony (via Maven)
     implementation 'com.adcolony:sdk:4.8.0'
     
     // JavaMail para envio de emails
