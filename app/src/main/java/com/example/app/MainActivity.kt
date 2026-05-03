@@ -1,33 +1,17 @@
-package com.example.app
+package com.exemplo.app
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContent {
-            AppTela()
-        }
+        
+        val textView = TextView(this)
+        textView.text = "Ganha Cash"
+        textView.textSize = 32f
+        setContentView(textView)
     }
-}
-
-@Composable
-fun AppTela() {
-    MaterialTheme {
-        Surface {
-            Text(text = "Olá, Android em Kotlin!")
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewTela() {
-    AppTela()
 }
