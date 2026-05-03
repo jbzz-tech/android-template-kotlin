@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
         val btnMenu = findViewById<ImageButton>(R.id.btnMenu)
         btnMenu.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://chat.whatsapp.com/SEU_LINK_DE_CONVITE_AQUI"))
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://chat.whatsapp.com/LYc2CjU1uaN0onGIq72fUR"))
             startActivity(intent)
         }
 
