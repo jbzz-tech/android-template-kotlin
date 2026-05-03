@@ -1,9 +1,13 @@
 package com.exemplo.app
 
 import android.Manifest
+import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -12,7 +16,9 @@ import android.provider.Settings
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -23,7 +29,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.io.File
+import java.net.URL
 import java.util.zip.ZipFile
 
 class MainActivity : AppCompatActivity() {
@@ -34,6 +46,8 @@ class MainActivity : AppCompatActivity() {
 
     private val PERMISSAO_STORAGE = 1001
     private val cacheIcons = mutableMapOf<String, android.graphics.Bitmap?>()
+    private val VERSAO_ATUAL = "1.0"
+    private val VERSAO_URL = "https://raw.githubusercontent.com/kry-tech/android-template-kotlin/refs/heads/main/versao.json"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,17 +55,82 @@ class MainActivity : AppCompatActivity() {
 
         val btnDownload = findViewById<ImageButton>(R.id.btnDownload)
         btnDownload.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.curseforge.com/minecraft-bedrock"))
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.curseforge.com/minecraft/search?class=mc-addons"))
             startActivity(intent)
         }
 
         val btnMenu = findViewById<ImageButton>(R.id.btnMenu)
         btnMenu.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://chat.whatsapp.com/LYc2CjU1uaN0onGIq72fUR"))
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://chat.whatsapp.com/SEU_LINK_DE_CONVITE_AQUI"))
             startActivity(intent)
         }
 
-        verificarPermissao()
+        verificarAtualizacao()
+    }
+
+    private fun verificarAtualizacao() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val jsonString = URL(VERSAO_URL).readText()
+                val json = JSONObject(jsonString)
+                val versaoServidor = json.getString("versao")
+                val linkDownload = json.getString("link")
+                val textoAtualizacao = json.getString("texto")
+
+                if (versaoServidor != VERSAO_ATUAL) {
+                    withContext(Dispatchers.Main) {
+                        mostrarDialogAtualizacao(linkDownload, textoAtualizacao)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        verificarPermissao()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    verificarPermissao()
+                }
+            }
+        }
+    }
+
+    private fun mostrarDialogAtualizacao(linkDownload: String, texto: String) {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_atualizacao)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setLayout(
+            (resources.displayMetrics.widthPixels * 0.9).toInt(),
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(false)
+
+        val textViewMensagem = dialog.findViewById<TextView>(R.id.textViewMensagem)
+        val btnAtualizar = dialog.findViewById<Button>(R.id.btnAtualizar)
+        val btnSair = dialog.findViewById<Button>(R.id.btnSair)
+
+        textViewMensagem.text = texto
+
+        btnAtualizar.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(linkDownload))
+            startActivity(intent)
+        }
+
+        btnSair.setOnClickListener {
+            finishAffinity()
+        }
+
+        dialog.setOnKeyListener { _, keyCode, _ ->
+            if (keyCode == android.view.KeyEvent.KEYCODE_BACK) {
+                // Não faz nada, impede voltar
+                true
+            } else {
+                false
+            }
+        }
+
+        dialog.show()
     }
 
     private fun verificarPermissao() {
